@@ -1,0 +1,45 @@
+# Qt Creator user files
+*.pro.user
+*.pro.user.*
+.qtcreator/
+
+# Qt build directories
+build/
+build-*/
+debug/
+release/
+Debug/
+Release/
+
+# Qt / qmake generated files
+.qmake.stash
+Makefile
+Makefile.*
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+
+# C++ build files
+*.o
+*.obj
+*.exe
+*.dll
+*.ilk
+*.pdb
+*.exp
+*.lib
+*.idx
+
+# Temporary files
+*.autosave
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.vscode/
+.idea/

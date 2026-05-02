@@ -5,7 +5,9 @@
 #include<QStackedWidget>
 
 #include"gamewidget.h"
+#include "src/core/gameconfig.h"
 #include"src/ui/startmenu.h"
+#include<src/core/gametypes.h>
 
 class MainWindow: public QMainWindow
 {
@@ -13,12 +15,11 @@ class MainWindow: public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow()=default;
-
-private:
     QStackedWidget *stackwidget;
 
     GameWidget* gamewidget;
     StartMenu* startmenu;
+    void entergame(GameConfig & config);
 
 
 

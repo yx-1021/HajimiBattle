@@ -9,7 +9,7 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     src/combat/attackbox.cpp \
-    src/combat/collisionsystem.cpp \
+    src/combat/collision.cpp \
     src/combat/skill.cpp \
     src/core/gamewidget.cpp \
     src/core/mainwindow.cpp \
@@ -22,7 +22,7 @@ SOURCES += \
 
 HEADERS += \
     src/combat/attackbox.h \
-    src/combat/collisionsystem.h \
+    src/combat/collision.h \
     src/combat/skill.h \
     src/core/gameconfig.h \
     src/core/gametypes.h \

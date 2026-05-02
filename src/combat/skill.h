@@ -1,10 +1,18 @@
 #ifndef SKILL_H
 #define SKILL_H
 
-class skill
+#include "src/entity/character.h"
+#include "src/combat/attackbox.h"
+#include "src/core/gametypes.h"
+
+class Skill
 {
 public:
-    skill();
+    static Attackbox createAttbox(Character &owner,
+                                     Battle type,
+                                     bool fromPlayer);
+
+
 };
 
-#endif // SKILL_H
+#endif

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include<src/ui/startmenu.h>
 #include<src/core/gamewidget.h>
+#include<src/core/gametypes.h>
 MainWindow::MainWindow(QWidget *parent)
     :QMainWindow{parent}
 {
@@ -16,22 +17,30 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(stackwidget);
     stackwidget->setCurrentWidget(startmenu);
 
-    connect(startmenu,&StartMenu::easygameclicked,this,[=](){
-        stackwidget->setCurrentWidget(gamewidget);
-        gamewidget->setFocus();
+    connect(startmenu,&StartMenu::levelclicked,this,[=](){
+        GameConfig config;
+        config.mode=Mode::level;
+        entergame(config);
     });
 
-    connect(startmenu,&StartMenu::difgameclicked,this,[=](){
-        stackwidget->setCurrentWidget(gamewidget);
-        gamewidget->setFocus();
+    connect(startmenu,&StartMenu::endlessclicked,this,[=](){
+        GameConfig config;
+        config.mode=Mode::endless;
+        entergame(config);
         });
 
     connect(startmenu,&StartMenu::setgameclicked,this,[=](){
-        stackwidget->setCurrentWidget(gamewidget);
-        gamewidget->setFocus();
+
     });
 
    connect(startmenu,&StartMenu::closeclicked,this,&MainWindow::close);
 
 
+}
+
+ void MainWindow::entergame(GameConfig & config)
+{
+     gamewidget->setConfig(config);
+     stackwidget->setCurrentWidget(gamewidget);
+    gamewidget->setFocus();
 }

@@ -18,8 +18,8 @@ public:
         void paintEvent(QPaintEvent *event) override;
 
 signals:
-    void easygameclicked();
-    void difgameclicked();
+    void levelclicked();
+    void endlessclicked();
     void setgameclicked();
     void closeclicked();
 };
