@@ -27,6 +27,7 @@ public:
 
     void paintEvent(QPaintEvent *event)override;
     void keyPressEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event)override;
     void keyReleaseEvent(QKeyEvent *event)override;
     void updategame();
 
@@ -38,6 +39,7 @@ public:
     void manyenemy();
     void setConfig(const GameConfig &newConfig);
     bool notoverlap(QRectF rect);
+    void removeboxes();
 
     QTimer *timer;
     GameConfig config;
@@ -52,8 +54,9 @@ public:
 
     bool gameover=false;
     bool win=false;
-    double attcool=0.5;
-    int plusattcool=1;
+    double attcool=0;
+    double plusattcool=0;
+    double hacool=0;
 
 
 

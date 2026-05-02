@@ -15,55 +15,68 @@ Attackbox Skill::createAttbox( Character &owner,
     {
         attdamage = 10;
         attdur = 8;
-        range = 60;
+        range =60;
         thickness = 60;
     }
     else if (type == Battle::ha)
     {
         attdamage = 6;
         attdur = 16;
-        range = 110;
+        range =60;
         thickness = 90;
     }
     else if (type == Battle::plusattack)
     {
         attdamage = 25;
         attdur = 10;
-        range = 80;
+        range =0;
         thickness = 70;
     }
+
+    QPointF c = body.center();
 
     QRectF attackRect;
 
     switch (owner.getDirection())
     {
     case Direction::up:
-        attackRect = QRectF(body.center().x() - thickness / 2,
-                            body.top() - range,
-                            thickness,
-                            range);
+        // 攻击框下边经过人物中心
+        attackRect = QRectF(
+            c.x() - thickness / 2,
+            c.y() - range,
+            thickness,
+            range
+            );
         break;
 
     case Direction::down:
-        attackRect = QRectF(body.center().x() - thickness / 2,
-                            body.bottom(),
-                            thickness,
-                            range);
+        // 攻击框上边经过人物中心
+        attackRect = QRectF(
+            c.x() - thickness / 2,
+            c.y(),
+            thickness,
+            range
+            );
         break;
 
     case Direction::left:
-        attackRect = QRectF(body.left() - range,
-                            body.center().y() - thickness / 2,
-                            range,
-                            thickness);
-
+        // 攻击框右边经过人物中心
+        attackRect = QRectF(
+            c.x() - range,
+            c.y() - thickness / 2,
+            range,
+            thickness
+            );
         break;
 
     case Direction::right:
-        attackRect = QRectF(body.right(),
-                            body.center().y() - thickness / 2,
-                            range,
-                            thickness);
+        // 攻击框左边经过人物中心
+        attackRect = QRectF(
+            c.x(),
+            c.y() - thickness / 2,
+            range,
+            thickness
+            );
         break;
     }
 

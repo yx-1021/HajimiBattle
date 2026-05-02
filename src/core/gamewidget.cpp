@@ -53,15 +53,22 @@ void GameWidget::paintEvent(QPaintEvent *event)
     {
         enemies[i].paint(painter);
     }
+    for (int i = 0; i < attackBoxes.size(); i++)
+    {
+        if (!attackBoxes[i].isExpired())
+        {
+            painter.save();
+            painter.setPen(QPen(Qt::red));
+            painter.setBrush(QColor(255, 0, 0, 80));
+            painter.drawRect(attackBoxes[i].getrect());
+            painter.restore();
+        }
+    }
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event)
 {
     if (gameover) return;
-    if (event->key() == Qt::LeftButton)
-    {
-        playeratt(Battle::attack);
-    }
 
     if (event->key() == Qt::Key_E)
     {
@@ -76,11 +83,36 @@ void GameWidget::keyPressEvent(QKeyEvent *event)
     player.handleKeyP(event);
 
 }
+
+void GameWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (gameover) return;
+
+    if (event->button() == Qt::LeftButton)
+    {
+        playeratt(Battle::attack);
+    }
+}
 void GameWidget::playeratt(Battle att)
 {
 
     if (gameover) {
         return;
+    }
+    if (att == Battle::attack)
+    {
+        if (attcool > 0) return;
+        attcool = 25;
+    }
+    else if (att == Battle::ha)
+    {
+        if (hacool > 0) return;
+        hacool = 80;
+    }
+    else if (att == Battle::plusattack)
+    {
+        if (plusattcool > 0) return;
+        plusattcool = 120;
     }
 
     attackBoxes.append(Skill::createAttbox(player, att, true));
@@ -157,6 +189,10 @@ void GameWidget::updategame()
 {
     if (!gameover)
     {
+        if (attcool > 0) attcool--;
+        if (hacool > 0) hacool--;
+        if (plusattcool > 0) plusattcool--;
+
         player.updategame(mapw, maph);
         QPointF playerCenter = player.rect().center();
 
@@ -173,6 +209,7 @@ void GameWidget::updategame()
         }
 
         Collision::handleColl(attackBoxes, player, enemies);
+        removeboxes();
 
         removedead();
         gamestate();
@@ -235,4 +272,15 @@ bool GameWidget::notoverlap(QRectF rect)
     }
 
     return true;
+}
+
+void GameWidget::removeboxes()
+{
+    for (int i = attackBoxes.size() - 1; i >= 0; i--)
+    {
+        if (attackBoxes[i].isExpired())
+        {
+            attackBoxes.removeAt(i);
+        }
+    }
 }

@@ -62,6 +62,7 @@ bool Enemy::canatt()
 
 Attackbox Enemy::createAttBox()
 {
+    atttimer=0;
     return Skill::createAttbox(*this, battle, false);
 }
 void Enemy::updategame(double mapw, double maph,QPointF playerCenter)

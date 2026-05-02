@@ -23,7 +23,7 @@ public:
     void updategame(double mapw, double maph,QPointF playerCenter);
 
     Enemytype type;
-    Battle battle;
+    Battle battle=Battle::attack;
     double attinterval;
     double atttimer=0;
 

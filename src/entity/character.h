@@ -21,7 +21,7 @@ public:
     double maxhp=10;
     double speed=3;
     double attack;
-    Direction direction;
+    Direction direction=Direction::right;
     Action action;
 };
 
