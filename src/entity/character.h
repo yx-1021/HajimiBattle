@@ -17,6 +17,12 @@ public:
     Direction getDirection();
     void hurt(double att);
 
+    double attackcd = 0;
+    double hacd = 0;
+    double pluscd = 0;
+    double halayer = 0;
+    bool plusready = false;
+
     double hp=10;
     double maxhp=10;
     double speed=3;

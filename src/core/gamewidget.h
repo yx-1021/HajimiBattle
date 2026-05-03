@@ -54,10 +54,6 @@ public:
 
     bool gameover=false;
     bool win=false;
-    double attcool=0;
-    double plusattcool=0;
-    double hacool=0;
-
 
 
 };

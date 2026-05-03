@@ -14,7 +14,7 @@ enum class Direction
 
 enum class Action
 {
-    still,run,win,lose
+    still,run,attack,ha,plusattack,win,lose
 };
 
 enum class Battle

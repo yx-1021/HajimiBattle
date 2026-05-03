@@ -20,9 +20,6 @@ GameWidget::GameWidget(const GameConfig &config, QWidget *parent)
 
     timer=new QTimer(this);
     connect(timer,&QTimer::timeout,this,&GameWidget::updategame);
-    timer->start(10);
-
-    manyenemy();
 }
 void GameWidget::setConfig(const GameConfig &newConfig)
 {
@@ -37,7 +34,7 @@ void GameWidget::setConfig(const GameConfig &newConfig)
     enemyinfcount = 0;
     gameover = false;
     win = false;
-
+    timer->start(10);
     manyenemy();
 
     update();
@@ -99,23 +96,10 @@ void GameWidget::playeratt(Battle att)
     if (gameover) {
         return;
     }
-    if (att == Battle::attack)
+    if (player.useskill(att))
     {
-        if (attcool > 0) return;
-        attcool = 25;
+        attackBoxes.append(Skill::createAttbox(player, att, true));
     }
-    else if (att == Battle::ha)
-    {
-        if (hacool > 0) return;
-        hacool = 80;
-    }
-    else if (att == Battle::plusattack)
-    {
-        if (plusattcool > 0) return;
-        plusattcool = 120;
-    }
-
-    attackBoxes.append(Skill::createAttbox(player, att, true));
 }
 
 
@@ -189,18 +173,17 @@ void GameWidget::updategame()
 {
     if (!gameover)
     {
-        if (attcool > 0) attcool--;
-        if (hacool > 0) hacool--;
-        if (plusattcool > 0) plusattcool--;
-
+        player.updatecd();
         player.updategame(mapw, maph);
         QPointF playerCenter = player.rect().center();
 
-        for (int i = 0; i < enemies.size(); i++) {
+        for (int i = 0; i < enemies.size(); i++)
+        {
             enemies[i].updategame(mapw, maph, playerCenter);
 
-            if (enemies[i].canatt()) {
-                attackBoxes.append(enemies[i].createAttBox());
+            if (enemies[i].haspendatt())
+            {
+                attackBoxes.append(enemies[i].takePendingAttackBox());
             }
         }
 
@@ -276,11 +259,13 @@ bool GameWidget::notoverlap(QRectF rect)
 
 void GameWidget::removeboxes()
 {
-    for (int i = attackBoxes.size() - 1; i >= 0; i--)
-    {
-        if (attackBoxes[i].isExpired())
+        for (int i = attackBoxes.size() - 1; i >= 0; i--)
         {
-            attackBoxes.removeAt(i);
+            if (attackBoxes[i].isExpired())
+            {
+                attackBoxes.removeAt(i);
+            }
         }
-    }
 }
+
+

@@ -3,6 +3,7 @@
 
 #include <QPointF>
 #include <QtMath>
+#include<QRandomGenerator>
 #include "src/entity/character.h"
 #include "src/core/gametypes.h"
 #include "src/combat/attackbox.h"
@@ -21,10 +22,26 @@ public:
     void paint(QPainter &painter);
     Attackbox createAttBox();
     void updategame(double mapw, double maph,QPointF playerCenter);
+    void updatecd();
+    void chooseState(double distance);
+    bool haspendatt();
+    Attackbox takePendingAttackBox();
 
+
+    Action aiState =Action::still;
+
+    int aiTimer = 0;
+    bool skillFired = false;
+
+    bool pendattack = false;
+    Battle pendbattle = Battle::attack;
+
+    double sightrange = 450;
+    double attackrange = 100;
+    double harange =100;
     Enemytype type;
     Battle battle=Battle::attack;
-    double attinterval;
+    double attinterval=0;
     double atttimer=0;
 
 

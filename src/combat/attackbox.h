@@ -15,6 +15,8 @@ public:
     double Damage();
     QRectF getrect();
     bool fromPlayer();
+    bool alreadyHit() const;
+    void markHit();
 
     bool isExpired();
     void expire();
@@ -25,6 +27,8 @@ public:
     double duration;
     bool isplayer;
     bool isexpired;
+    bool hashit = false;
+
 };
 
 #endif // ATTACKBOX_H

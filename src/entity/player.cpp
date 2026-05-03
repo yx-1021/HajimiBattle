@@ -90,3 +90,57 @@ Attackbox Player::createAttbox(Battle type)
 {
     return Skill::createAttbox(*this, type, true);
 }
+
+void Player::updatecd()
+{
+
+    if(attackcd>0) attackcd--;
+    if(hacd>0) hacd--;
+    if(pluscd>0) pluscd--;
+}
+
+bool Player::useskill(Battle type)
+{
+    if (!ealive) return false;
+
+    if (type == Battle::attack)
+    {
+        if (attackcd > 0) return false;
+
+        attackcd = 25;
+        action = Action::attack;
+        return true;
+    }
+
+    if (type == Battle::ha)
+    {
+        if (hacd> 0) return false;
+
+        hacd= 70;
+       halayer++;
+
+        if (halayer >= 3)
+        {
+           halayer = 3;
+            plusready= true;
+        }
+
+        action = Action::ha;
+        return true;
+    }
+
+    if (type == Battle::plusattack)
+    {
+        if (pluscd> 0) return false;
+        if (!plusready ||halayer < 3) return false;
+
+        pluscd= 100;
+       halayer = 0;
+        plusready = false;
+
+        action = Action::plusattack;
+        return true;
+    }
+
+    return false;
+}

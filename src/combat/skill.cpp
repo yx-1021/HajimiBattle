@@ -29,7 +29,7 @@ Attackbox Skill::createAttbox( Character &owner,
     {
         attdamage = 25;
         attdur = 10;
-        range =0;
+        range =50;
         thickness = 70;
     }
 
@@ -40,7 +40,6 @@ Attackbox Skill::createAttbox( Character &owner,
     switch (owner.getDirection())
     {
     case Direction::up:
-        // 攻击框下边经过人物中心
         attackRect = QRectF(
             c.x() - thickness / 2,
             c.y() - range,
@@ -50,7 +49,6 @@ Attackbox Skill::createAttbox( Character &owner,
         break;
 
     case Direction::down:
-        // 攻击框上边经过人物中心
         attackRect = QRectF(
             c.x() - thickness / 2,
             c.y(),
@@ -60,7 +58,6 @@ Attackbox Skill::createAttbox( Character &owner,
         break;
 
     case Direction::left:
-        // 攻击框右边经过人物中心
         attackRect = QRectF(
             c.x() - range,
             c.y() - thickness / 2,
@@ -70,7 +67,6 @@ Attackbox Skill::createAttbox( Character &owner,
         break;
 
     case Direction::right:
-        // 攻击框左边经过人物中心
         attackRect = QRectF(
             c.x(),
             c.y() - thickness / 2,

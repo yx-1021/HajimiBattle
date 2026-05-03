@@ -12,15 +12,30 @@ QRectF Attackbox::getrect()
 }
  void Attackbox::update()
 {
-     if(isexpired) return ;
+     if (isexpired) return;
 
      duration--;
-     if(duration<=0) isexpired=true;
+
+     if (duration <= 0)
+     {
+         isexpired = true;
+     }
 
 }
 bool Attackbox::fromPlayer()
 {
     return isplayer;
+}
+
+
+bool Attackbox::alreadyHit() const
+{
+ return hashit;
+}
+
+void Attackbox::markHit()
+{
+      hashit = true;
 }
  bool Attackbox::isExpired()
 {

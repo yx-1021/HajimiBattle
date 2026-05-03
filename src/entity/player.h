@@ -21,6 +21,9 @@ public:
     void updategame(double mapw,double maph)override;
     void load();
     Attackbox createAttbox(Battle type);
+    void updatecd();
+    bool useskill(Battle type);
+
 
     bool keyW = false;
     bool keyS = false;

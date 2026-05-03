@@ -16,6 +16,7 @@ void Collision::handleColl(QVector<Attackbox> &attackboxes,
 
         if (box.fromPlayer())
         {
+            if (box.alreadyHit()) continue;
             for (int j = 0; j < enemies.size(); j++)
             {
                 Enemy &enemy = enemies[j];
@@ -25,17 +26,18 @@ void Collision::handleColl(QVector<Attackbox> &attackboxes,
                 if (box.getrect().intersects(enemy.rect()))
                 {
                     enemy.hurt(box.Damage());
-                    box.expire();
+                    box.markHit();
                     break;
                 }
             }
         }
         else
         {
+            if (box.alreadyHit()) continue;
             if (player.isalive() && box.getrect().intersects(player.rect()))
             {
                 player.hurt(box.Damage());
-                box.expire();
+                box.markHit();
             }
         }
     }
