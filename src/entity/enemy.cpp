@@ -1,7 +1,8 @@
 #include "src/entity/enemy.h"
 
 Enemy::Enemy()
-:Character(600, 600, 100, 100)
+:Character(600, 600, 100, 100),
+ type(Enemytype::ocat)
 {
     initbat();
     load();
@@ -37,22 +38,30 @@ void Enemy::initbat()
 
 void Enemy::load()
 {
-    if(type==Enemytype::box)
+    if (type == Enemytype::box)
     {
-        epixmap.load(":/new/prefix1/rescource/box.png");
+        loadaction("box");
     }
-    else if(type==Enemytype::ocat)
+    else if (type == Enemytype::ocat)
     {
-        epixmap.load(":/new/prefix1/rescource/enemy_cat.png");
+        loadaction("ocat");
     }
+
+    epixmap = currentPixmap();
 }
+
+
 
 void Enemy::paint(QPainter &painter)
 {
-    if (!ealive) {
-        return;
+    if (!ealive) return;
+
+    QPixmap pix = currentPixmap();
+
+    if (!pix.isNull())
+    {
+        painter.drawPixmap(rect().toRect(), pix);
     }
-     painter.drawPixmap(rect().toRect(), epixmap);
 }
 
 bool Enemy::canatt()
@@ -178,6 +187,7 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
 
     epos.setX(qBound(0.0, epos.x(), qMax(0.0, mapw - esize.width())));
     epos.setY(qBound(0.0, epos.y(), qMax(0.0, maph - esize.height())));
+    updateaction();
 
     atttimer++;
 }
@@ -197,35 +207,56 @@ void Enemy::chooseState(double len)
 
     int r = QRandomGenerator::global()->bounded(100);
 
-    if (len >sightrange)
+    if (len > sightrange)
     {
         aiState = Action::still;
         aiTimer = QRandomGenerator::global()->bounded(40, 100);
-        action = Action::still;
         return;
     }
 
-    if (plusready && halayer >= 3 && pluscd<= 0 && len <= attackrange+ 40)
+    // 纸箱怪禁止哈气
+    if (type == Enemytype::box)
+    {
+        if (len <= attackrange && attackcd <= 0)
+        {
+            aiState = Action::attack;
+            aiTimer = 25;
+            return;
+        }
+
+        if (r < 25)
+        {
+            aiState = Action::still;
+            aiTimer = QRandomGenerator::global()->bounded(30, 80);
+        }
+        else
+        {
+            aiState = Action::run;
+            aiTimer = QRandomGenerator::global()->bounded(50, 120);
+        }
+
+        return;
+    }
+
+    // 橘猫怪允许哈气
+    if (plusready && halayer >= 3 && pluscd <= 0 && len <= attackrange + 40)
     {
         aiState = Action::plusattack;
         aiTimer = 35;
-        action = Action::plusattack;
         return;
     }
 
-    if (len <= attackrange&&attackcd<= 0 && r < 60)
+    if (len <= attackrange && attackcd <= 0 && r < 60)
     {
         aiState = Action::attack;
         aiTimer = 25;
-        action = Action::attack;
         return;
     }
 
-    if (len <= harange&&hacd<= 0 && r <40)
+    if (len <= harange && hacd <= 0 && r < 40)
     {
         aiState = Action::ha;
         aiTimer = 35;
-        action = Action::ha;
         return;
     }
 
@@ -233,13 +264,11 @@ void Enemy::chooseState(double len)
     {
         aiState = Action::still;
         aiTimer = QRandomGenerator::global()->bounded(30, 80);
-        action = Action::still;
     }
     else
     {
         aiState = Action::run;
         aiTimer = QRandomGenerator::global()->bounded(50, 120);
-        action = Action::run;
     }
 }
 

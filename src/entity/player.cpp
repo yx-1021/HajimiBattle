@@ -2,26 +2,36 @@
 #include "src/combat/attackbox.h"
 
 Player::Player()
-    :Character(300,300,100,100)
+    : Character(300, 300, 100, 100)
 {
-    load();
     maxhp = 100;
     hp = 100;
     attack = 10;
     speed = 3;
+
     direction = Direction::right;
-    action=Action::still;
+    action = Action::still;
+    ptype = Battle::attack;
+
+    keyW = false;
+    keyS = false;
+    keyA = false;
+    keyD = false;
+
+    load();
 }
 
-void Player::load()
-{
-    epixmap.load(":/new/prefix1/rescource/player_right.png");
-}
 
 void Player::paint(QPainter &painter)
 {
-    if(!ealive) return;
-    painter.drawPixmap(rect().toRect(),epixmap);
+    if (!ealive) return;
+
+    QPixmap pix = currentPixmap();
+
+    if (!pix.isNull())
+    {
+        painter.drawPixmap(rect().toRect(), pix);
+    }
 
 }
 
@@ -74,16 +84,59 @@ void Player::handleKeyR(QKeyEvent *event)
 
 void Player::updategame(double mapw,double maph)
 {
-    if (!ealive) return;
+    double dx = 0;
+    double dy = 0;
 
-    if (keyW) epos.setY(epos.y() - speed);
-    if (keyS) epos.setY(epos.y() + speed);
-    if (keyA) epos.setX(epos.x() - speed);
-    if (keyD) epos.setX(epos.x() + speed);
+    if (keyW) dy -= 1;
+    if (keyS) dy += 1;
+    if (keyA) dx -= 1;
+    if (keyD) dx += 1;
 
-    epos.setX(qBound(0.0, epos.x(), qMax(0.0, double(mapw) - esize.width())));
-    epos.setY(qBound(0.0, epos.y(), qMax(0.0, double(maph) - esize.height())));
+    bool moving = (dx != 0 || dy != 0);
 
+    if (moving)
+    {
+        double len = qSqrt(dx * dx + dy * dy);
+        dx /= len;
+        dy /= len;
+
+        epos.setX(epos.x() + dx * speed);
+        epos.setY(epos.y() + dy * speed);
+
+        if (qAbs(dx) > qAbs(dy))
+        {
+            direction = dx > 0 ? Direction::right : Direction::left;
+        }
+        else
+        {
+            direction = dy > 0 ? Direction::down : Direction::up;
+        }
+
+        if (!isActionLocked())
+        {
+            action = Action::run;
+        }
+    }
+    else
+    {
+        if (!isActionLocked())
+        {
+            action = Action::still;
+        }
+    }
+
+    epos.setX(qBound(0.0, epos.x(), qMax(0.0, mapw - esize.width())));
+    epos.setY(qBound(0.0, epos.y(), qMax(0.0, maph - esize.height())));
+
+    updateaction();
+
+}
+
+void Player::load()
+{
+
+    loadaction("player");
+    epixmap = currentPixmap();
 }
 
 Attackbox Player::createAttbox(Battle type)
@@ -103,42 +156,45 @@ bool Player::useskill(Battle type)
 {
     if (!ealive) return false;
 
+    if (isActionLocked()) return false;
+
     if (type == Battle::attack)
     {
         if (attackcd > 0) return false;
 
-        attackcd = 25;
-        action = Action::attack;
+        attackcd = 35;
+        playaction(Action::attack, 24);
         return true;
     }
 
     if (type == Battle::ha)
     {
-        if (hacd> 0) return false;
+        if (hacd > 0) return false;
 
-        hacd= 70;
-       halayer++;
+        hacd = 60;
+        halayer++;
 
         if (halayer >= 3)
         {
-           halayer = 3;
-            plusready= true;
+            halayer = 3;
+            plusready = true;
         }
 
-        action = Action::ha;
+        playaction(Action::ha, 30);
         return true;
     }
 
     if (type == Battle::plusattack)
     {
-        if (pluscd> 0) return false;
-        if (!plusready ||halayer < 3) return false;
+        if (pluscd > 0) return false;
+        if (!plusready) return false;
+        if (halayer < 3) return false;
 
-        pluscd= 100;
-       halayer = 0;
+        pluscd = 100;
+        halayer = 0;
         plusready = false;
 
-        action = Action::plusattack;
+        playaction(Action::plusattack, 36);
         return true;
     }
 

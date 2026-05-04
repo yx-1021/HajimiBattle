@@ -8,6 +8,7 @@
 #include<QPaintEvent>
 #include<QPainter>
 #include<QPixmap>
+#include<QtMath>
 #include"src/combat/skill.h"
 
 class Player:public Character
