@@ -1,7 +1,6 @@
 #ifndef STARTMENU_H
 #define STARTMENU_H
 
-#include <QWidget>
 #include<QPushButton>
 #include<QVBoxLayout>
 #include<QLayout>

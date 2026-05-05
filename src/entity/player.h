@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include<QRectF>
+#include "character.h"
 #include "src/entity/character.h"
 #include <QKeyEvent>
 #include <QtGlobal>

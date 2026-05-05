@@ -1,5 +1,5 @@
 #include "gamewidget.h"
-
+#include <QDebug>
 
 
 GameWidget::GameWidget(QWidget *parent)
@@ -15,7 +15,7 @@ GameWidget::GameWidget(const GameConfig &config, QWidget *parent)
     win(false)
 {
     resize(mapw,maph);
-    backmap.load(":/new/prefix1/rescource/backmap.png");
+    backmap.load("D:/Mypractice/Qt/HajimiBattle/assets/background/backmap.png");
     setFocusPolicy(Qt::StrongFocus);
 
     timer=new QTimer(this);
@@ -39,6 +39,8 @@ void GameWidget::setConfig(const GameConfig &newConfig)
 
     update();
 }
+
+
 void GameWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
@@ -168,7 +170,6 @@ void GameWidget::generateenemy()
     }
 
 }
-
 void GameWidget::updategame()
 {
     if (!gameover)
@@ -210,23 +211,16 @@ void GameWidget::updategame()
     update();
 }
 
-void GameWidget::removedead()
-{
-    for (int i = enemies.size() - 1; i >= 0; i--)
-    {
-        if (!enemies[i].isalive())
-        {
-            enemies.removeAt(i);
-        }
-    }
-}
-
 void GameWidget::gamestate()
 {
     if (!player.isalive())
     {
         gameover = true;
         win = false;
+
+        timer->stop();
+        emit gameFinished(ResultType::lose, score);
+
         return;
     }
 
@@ -234,10 +228,54 @@ void GameWidget::gamestate()
     {
         gameover = true;
         win = true;
+
+        timer->stop();
+        emit gameFinished(ResultType::win, score);
+
         return;
     }
 }
 
+void GameWidget::removedead()
+{
+    for (int i = enemies.size() - 1; i >= 0; i--)
+    {
+        if (!enemies[i].isalive())
+        {
+            score += enemyScore(enemies[i]);
+            enemies.removeAt(i);
+        }
+    }
+}
+
+int GameWidget::enemyScore(const Enemy &enemy)
+{
+    if (enemy.type == Enemytype::ocat)
+    {
+        return 10;
+    }
+
+    if (enemy.type == Enemytype::box)
+    {
+        return 15;
+    }
+
+    return 10;
+}
+void GameWidget::endByUser()
+{
+    if (gameover)
+    {
+        return;
+    }
+
+    gameover = true;
+    win = false;
+
+    timer->stop();
+
+    emit gameFinished(ResultType::end, score);
+}
 bool GameWidget::notoverlap(QRectF rect)
 {
     QRectF playerSafeRect = player.rect().adjusted(-30, -30, 30, 30);
@@ -253,9 +291,10 @@ bool GameWidget::notoverlap(QRectF rect)
             return false;
         }
     }
-
     return true;
 }
+
+
 
 void GameWidget::removeboxes()
 {

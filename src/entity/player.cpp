@@ -134,9 +134,7 @@ void Player::updategame(double mapw,double maph)
 
 void Player::load()
 {
-
     loadaction("player");
-    epixmap = currentPixmap();
 }
 
 Attackbox Player::createAttbox(Battle type)

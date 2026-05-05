@@ -14,7 +14,7 @@ StartMenu::StartMenu(QWidget *parent)
     setbutton->setGeometry(600,400,300,50);
     closebutton->setGeometry(600,500,300,50);
     //添加背景
-    bg.load(":/new/prefix1/rescource/cover.png");
+    bg.load("D:/Mypractice/Qt/HajimiBattle/assets/background/cover.png");
 
     connect(levelButton, &QPushButton::clicked, this, &StartMenu::levelclicked);
     connect(endlessButton, &QPushButton::clicked, this, &StartMenu::endlessclicked);

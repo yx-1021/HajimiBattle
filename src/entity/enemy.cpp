@@ -47,7 +47,6 @@ void Enemy::load()
         loadaction("ocat");
     }
 
-    epixmap = currentPixmap();
 }
 
 
@@ -214,7 +213,6 @@ void Enemy::chooseState(double len)
         return;
     }
 
-    // 纸箱怪禁止哈气
     if (type == Enemytype::box)
     {
         if (len <= attackrange && attackcd <= 0)
@@ -238,7 +236,7 @@ void Enemy::chooseState(double len)
         return;
     }
 
-    // 橘猫怪允许哈气
+
     if (plusready && halayer >= 3 && pluscd <= 0 && len <= attackrange + 40)
     {
         aiState = Action::plusattack;

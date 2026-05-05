@@ -1,37 +1,170 @@
 #include "character.h"
-#include "character.h"
 
+#include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QHash>
+#include <QPixmapCache>
 #include <QStringList>
-namespace
+
+
+QStringList possibleAssetRoots()
 {
-bool tryLoadPixmap(QPixmap &pix, const QString &fileName)
+    QString appDir = QCoreApplication::applicationDirPath();
+    QString curDir = QDir::currentPath();
+
+    QStringList roots;
+
+    roots << appDir + "/assets";
+    roots << appDir + "/../assets";
+    roots << appDir + "/../../assets";
+    roots << appDir + "/../../../assets";
+    roots << appDir + "/../../../../assets";
+
+    roots << curDir + "/assets";
+    roots << curDir + "/../assets";
+    roots << curDir + "/../../assets";
+    roots << curDir + "/../../../assets";
+
+    return roots;
+}
+
+QString subFolderByRole(const QString &roleName)
 {
-    QStringList paths;
-
-    paths << QString(":/new/prefix1/resource/%1").arg(fileName);
-    paths << QString(":/resource/%1").arg(fileName);
-
-    paths << QString(":/new/prefix1/rescource/%1").arg(fileName);
-    paths << QString(":/rescource/%1").arg(fileName);
-
-    for (const QString &path : paths)
+    if (roleName == "player" || roleName.startsWith("player"))
     {
-        if (pix.load(path))
+        return "player";
+    }
+
+    return "enemy";
+}
+
+QString findAssetFile(const QString &subFolder, const QString &fileName)
+{
+    QStringList roots = possibleAssetRoots();
+
+    for (const QString &root : roots)
+    {
+        QString path = QDir(root).filePath(subFolder + "/" + fileName);
+
+        if (QFileInfo::exists(path))
         {
-            qDebug() << "sprite loaded:" << path;
-            return true;
+            return path;
         }
     }
 
-    qDebug() << "sprite load failed:" << fileName;
-    return false;
+    return QString();
 }
+
+bool loadOnePixmap(QPixmap &pix, const QString &subFolder,
+                   const QString &fileName, const QSize &targetSize)
+{
+    QString path = findAssetFile(subFolder, fileName);
+
+    if (path.isEmpty())
+    {
+        return false;
+    }
+
+    QString cacheKey = path + QString("@%1x%2")
+                                  .arg(targetSize.width())
+                                  .arg(targetSize.height());
+
+    if (QPixmapCache::find(cacheKey, &pix))
+    {
+        return true;
+    }
+
+    QPixmap raw;
+
+    if (!raw.load(path))
+    {
+        return false;
+    }
+
+    if (targetSize.width() > 0 && targetSize.height() > 0)
+    {
+        raw = raw.scaled(targetSize,
+                         Qt::KeepAspectRatio,
+                         Qt::SmoothTransformation);
+    }
+
+    pix = raw;
+    QPixmapCache::insert(cacheKey, pix);
+
+    return true;
+}
+
+QVector<QPixmap> loadClip(const QString &roleName,
+                          Direction dir,
+                          Action act,
+                          const QSize &targetSize)
+{
+    static QHash<QString, QVector<QPixmap>> clipCache;
+
+    QString subFolder = subFolderByRole(roleName);
+
+    QString baseName = QString("%1_%2_%3")
+                           .arg(roleName)
+                           .arg(Character::Direcname(dir))
+                           .arg(Character::Actionname(act));
+
+    QString cacheKey = subFolder + "/" + baseName + QString("@%1x%2")
+                                                        .arg(targetSize.width())
+                                                        .arg(targetSize.height());
+
+    if (clipCache.contains(cacheKey))
+    {
+        return clipCache.value(cacheKey);
+    }
+
+    QVector<QPixmap> clip;
+
+
+    for (int i = 0; i <= 30; i++)
+    {
+        QString fileName = QString("%1_%2.png").arg(baseName).arg(i);
+
+        QPixmap frame;
+
+        if (loadOnePixmap(frame, subFolder, fileName, targetSize))
+        {
+            clip.push_back(frame);
+        }
+    }
+
+    if (clip.isEmpty())
+    {
+        QString singleFileName = baseName + ".png";
+
+        QPixmap single;
+
+        if (loadOnePixmap(single, subFolder, singleFileName, targetSize))
+        {
+            clip.push_back(single);
+        }
+    }
+
+    if (clip.isEmpty())
+    {
+        QString roleSingleFileName = roleName + ".png";
+
+        QPixmap roleSingle;
+
+        if (loadOnePixmap(roleSingle, subFolder, roleSingleFileName, targetSize))
+        {
+            clip.push_back(roleSingle);
+        }
+    }
+
+    clipCache.insert(cacheKey, clip);
+    return clip;
 }
 
 
 Character::Character()
-    :Entity(),
+    : Entity(),
     hp(10),
     maxhp(10),
     speed(3),
@@ -55,65 +188,39 @@ Character::Character(double x, double y, double w, double h)
 void Character::load()
 {
 }
+
 void Character::hurt(double att)
 {
-    if(!ealive) return;
-    hp-=att;
-    if(hp<=0)
+    if (!ealive) return;
+
+    hp -= att;
+
+    if (hp <= 0)
     {
-        hp=0;
-        Entity::ealive=false;
+        hp = 0;
+        ealive = false;
     }
 }
-void Character::setRoleName(const QString &name)
+
+Direction Character::getDirection()
 {
-    roleName = name;
+    return direction;
 }
 
-
-QPixmap Character::currentPixmap()
-{ int a = static_cast<int>(action);
-    int d = static_cast<int>(direction);
-
-    int still = static_cast<int>(Action::still);
-    int right = static_cast<int>(Direction::right);
-
-    if (a >= 0 && a < ACTION && d >= 0 && d < DIRECT)
-    {
-        if (!animations[a][d].isEmpty())
-        {
-            int id = frameid % animations[a][d].size();
-            return animations[a][d][id];
-        }
-
-        if (!animations[still][d].isEmpty())
-        {
-            int id = frameid % animations[still][d].size();
-            return animations[still][d][id];
-        }
-
-        if (!animations[still][right].isEmpty())
-        {
-            int id = frameid % animations[still][right].size();
-            return animations[still][right][id];
-        }
-    }
-
-    return epixmap;
+Action Character::getAction()
+{
+    return action;
 }
 
-void Character::startAction(Action a, int keepTicks)
+void Character::setDirection(Direction d)
+{
+    direction = d;
+}
+
+void Character::setAction(Action a)
 {
     action = a;
-    actionLock = keepTicks;
 }
-
-bool Character::actionLocked()
-{
- return actionLock > 0;
-}
-
-
 
 QString Character::Actionname(Action a)
 {
@@ -132,7 +239,6 @@ QString Character::Actionname(Action a)
     }
 
     return "still";
-
 }
 
 QString Character::Direcname(Direction d)
@@ -150,90 +256,91 @@ QString Character::Direcname(Direction d)
     }
 
     return "right";
-
 }
 
 void Character::loadaction(const QString &roleName)
 {
-    const int MAX_FRAME = 20;
+    role = roleName;
+
+    QSize targetSize = esize.toSize();
 
     for (int a = 0; a < ACTION; a++)
     {
         for (int d = 0; d < DIRECT; d++)
         {
-            animations[a][d].clear();
-
             Action act = static_cast<Action>(a);
             Direction dir = static_cast<Direction>(d);
 
-            for (int f = 0; f < MAX_FRAME; f++)
-            {
-                QString fileName = QString("%1_%2_%3_%4.png")
-                .arg(roleName)
-                    .arg(Direcname(dir))
-                    .arg(Actionname(act))
-                    .arg(f);
-
-                QPixmap pix;
-                if (tryLoadPixmap(pix, fileName))
-                {
-                    animations[a][d].append(pix);
-                }
-            }
-
-
-            if (animations[a][d].isEmpty())
-            {
-                QString fileName = QString("%1_%2_%3.png")
-                .arg(roleName)
-                    .arg(Direcname(dir))
-                    .arg(Actionname(act));
-
-                QPixmap pix;
-                if (tryLoadPixmap(pix, fileName))
-                {
-                    animations[a][d].append(pix);
-                }
-            }
-
-            if (!animations[a][d].isEmpty())
-            {
-                qDebug() << "loaded animation:"
-                         << roleName
-                         << Direcname(dir)
-                         << Actionname(act)
-                         << "frames =" << animations[a][d].size();
-            }
+            sprites[a][d] = loadClip(roleName, dir, act, targetSize);
         }
+    }
+
+    int still = static_cast<int>(Action::still);
+    int right = static_cast<int>(Direction::right);
+
+    if (!sprites[still][right].isEmpty())
+    {
+        epixmap = sprites[still][right][0];
+    }
+    else
+    {
+        qDebug() << "role essential sprite missing:" << roleName;
+        qDebug() << "put one image here if you want single-picture mode:"
+                 << "assets/" + subFolderByRole(roleName) + "/" + roleName + ".png";
     }
 }
 
-void Character::updategame(double mapw,double maph)
+void Character::changeRole(const QString &roleName)
 {
-    Q_UNUSED(mapw);
-    Q_UNUSED(maph);
-    return;
+    loadaction(roleName);
+
+    frameid = 0;
+    frametick = 0;
+    action = Action::still;
+    direction = Direction::right;
 }
 
-Direction Character::getDirection()
+QPixmap Character::currentPixmap()
 {
+    int a = static_cast<int>(action);
+    int d = static_cast<int>(direction);
 
-    return direction;
+    int still = static_cast<int>(Action::still);
+    int right = static_cast<int>(Direction::right);
+
+    if (a >= 0 && a < ACTION && d >= 0 && d < DIRECT)
+    {
+        if (!sprites[a][d].isEmpty())
+        {
+            int idx = frameid % sprites[a][d].size();
+            return sprites[a][d][idx];
+        }
+
+        if (!sprites[still][d].isEmpty())
+        {
+            int idx = frameid % sprites[still][d].size();
+            return sprites[still][d][idx];
+        }
+
+        if (!sprites[still][right].isEmpty())
+        {
+            int idx = frameid % sprites[still][right].size();
+            return sprites[still][right][idx];
+        }
+    }
+
+    return epixmap;
 }
 
-Action Character::getAction()
+void Character::startAction(Action a, int keepTicks)
 {
-    return action;
-}
+    action = a;
+    actionLock = keepTicks;
 
-void Character::setDirection(Direction d)
-{
-    direction = d;
-}
-
-void Character::setAction(Action a)
-{
-    action=a;
+    frameid = 0;
+    frametick = 0;
+    lastAction = a;
+    lastDirection = direction;
 }
 
 void Character::playaction(Action a, int lockTicks)
@@ -243,9 +350,13 @@ void Character::playaction(Action a, int lockTicks)
 
     frameid = 0;
     frametick = 0;
-
     lastAction = a;
     lastDirection = direction;
+}
+
+bool Character::actionLocked()
+{
+    return actionLock > 0;
 }
 
 bool Character::isActionLocked()
@@ -253,8 +364,11 @@ bool Character::isActionLocked()
     return actionLock > 0;
 }
 
-void Character::updateaction()
+void Character::updateanimation()
 {
+    int a = static_cast<int>(action);
+    int d = static_cast<int>(direction);
+
     if (action != lastAction || direction != lastDirection)
     {
         frameid = 0;
@@ -262,32 +376,51 @@ void Character::updateaction()
         lastAction = action;
         lastDirection = direction;
     }
-    int a = static_cast<int>(action);
-    int d = static_cast<int>(direction);
 
-    if (a >= 0 && a < ACTION && d >= 0 && d < DIRECT)
+    if (a < 0 || a >= ACTION || d < 0 || d >= DIRECT)
     {
-        if (!animations[a][d].isEmpty())
+        return;
+    }
+
+    QVector<QPixmap> *clip = nullptr;
+
+    if (!sprites[a][d].isEmpty())
+    {
+        clip = &sprites[a][d];
+    }
+    else
+    {
+        int still = static_cast<int>(Action::still);
+
+        if (!sprites[still][d].isEmpty())
         {
-            frametick++;
-
-            if (frametick >= frameinterval)
-            {
-                frametick = 0;
-                frameid++;
-
-                if (frameid >= animations[a][d].size())
-                {
-                    frameid = 0;
-                }
-            }
+            clip = &sprites[still][d];
         }
     }
 
-    if (actionLock > 0)
+    if (clip == nullptr || clip->size() <= 1)
     {
-        actionLock--;
+        return;
     }
+
+    frametick++;
+
+    if (frametick >= frameinterval)
+    {
+        frametick = 0;
+        frameid++;
+
+        if (frameid >= clip->size())
+        {
+            frameid = 0;
+        }
+    }
+}
+
+void Character::updateaction()
+{
+    updateanimation();
+    updateactionlock();
 }
 
 void Character::updateactionlock()
@@ -296,4 +429,10 @@ void Character::updateactionlock()
     {
         actionLock--;
     }
+}
+
+void Character::updategame(double mapw, double maph)
+{
+    Q_UNUSED(mapw);
+    Q_UNUSED(maph);
 }

@@ -1,46 +1,78 @@
 #include "mainwindow.h"
-#include<src/ui/startmenu.h>
-#include<src/core/gamewidget.h>
-#include<src/core/gametypes.h>
-MainWindow::MainWindow(QWidget *parent)
-    :QMainWindow{parent}
-{
-    resize(640,480);
-    //构建菜单和游玩窗口
-    stackwidget=new QStackedWidget(this);
-    gamewidget=new GameWidget(this);
-    startmenu=new StartMenu(this);
 
-    stackwidget->addWidget(gamewidget);
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow{parent}
+{
+    resize(1000, 600);
+
+    stackwidget = new QStackedWidget(this);
+
+    startmenu = new StartMenu(this);
+    gamewidget = new GameWidget(this);
+    resultwidget = new ResultWidget(this);
+
     stackwidget->addWidget(startmenu);
-    //实现窗口切换
+    stackwidget->addWidget(gamewidget);
+    stackwidget->addWidget(resultwidget);
+
     setCentralWidget(stackwidget);
     stackwidget->setCurrentWidget(startmenu);
 
-    connect(startmenu,&StartMenu::levelclicked,this,[=](){
+    connect(startmenu, &StartMenu::levelclicked, this, [=]() {
         GameConfig config;
-        config.mode=Mode::level;
+        config.mode = Mode::level;
+        config.isendless = false;
+        config.enemynum = 7;
+        config.enemyinterval = 1500;
+
         entergame(config);
     });
 
-    connect(startmenu,&StartMenu::endlessclicked,this,[=](){
+    connect(startmenu, &StartMenu::endlessclicked, this, [=]() {
         GameConfig config;
-        config.mode=Mode::endless;
+        config.mode = Mode::endless;
+        config.isendless = true;
+        config.enemynum = 7;
+        config.enemyinterval = 1500;
+
         entergame(config);
-        });
-
-    connect(startmenu,&StartMenu::setgameclicked,this,[=](){
-
     });
 
-   connect(startmenu,&StartMenu::closeclicked,this,&MainWindow::close);
+    connect(startmenu, &StartMenu::setgameclicked, this, [=]() {
+    });
 
+    connect(startmenu, &StartMenu::closeclicked,
+            this, &MainWindow::close);
 
+    connect(gamewidget, &GameWidget::gameFinished,
+            this, &MainWindow::showResult);
+
+    connect(resultwidget, &ResultWidget::returnMenuClicked, this, [=]() {
+        if (gamewidget->timer)
+        {
+            gamewidget->timer->stop();
+        }
+
+        stackwidget->setCurrentWidget(startmenu);
+    });
+
+    connect(resultwidget, &ResultWidget::retryClicked, this, [=]() {
+        entergame(lastConfig);
+    });
 }
 
- void MainWindow::entergame(GameConfig & config)
+void MainWindow::entergame(const GameConfig &config)
 {
-     gamewidget->setConfig(config);
-     stackwidget->setCurrentWidget(gamewidget);
+    lastConfig = config;
+
+    gamewidget->setConfig(config);
+    stackwidget->setCurrentWidget(gamewidget);
+
     gamewidget->setFocus();
+}
+
+void MainWindow::showResult(ResultType type, int score)
+{
+    resultwidget->setResult(type, score);
+    stackwidget->setCurrentWidget(resultwidget);
 }

@@ -16,8 +16,7 @@
 #include "src/entity/player.h"
 #include "src/entity/enemy.h"
 #include "src/combat/attackbox.h"
-#include "src/combat/skill.h"
-#include "src/combat/collision.h"
+#include"src/combat/collision.h"
 class GameWidget : public QWidget
 {
     Q_OBJECT
@@ -41,6 +40,9 @@ public:
     bool notoverlap(QRectF rect);
     void removeboxes();
 
+    void endByUser();
+    int enemyScore(const Enemy &enemy);
+
     QTimer *timer;
     GameConfig config;
     QPixmap backmap;
@@ -54,6 +56,9 @@ public:
 
     bool gameover=false;
     bool win=false;
+
+signals:
+    void gameFinished(ResultType type, int score);
 
 
 };
