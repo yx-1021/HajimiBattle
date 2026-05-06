@@ -22,8 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
         GameConfig config;
         config.mode = Mode::level;
         config.isendless = false;
-        config.enemynum = 7;
+        config.enemynum =5;
         config.enemyinterval = 1500;
+
+        config.isCaidan = caidanEnabled;
 
         entergame(config);
     });
@@ -32,13 +34,25 @@ MainWindow::MainWindow(QWidget *parent)
         GameConfig config;
         config.mode = Mode::endless;
         config.isendless = true;
-        config.enemynum = 7;
+        config.enemynum =5;
         config.enemyinterval = 1500;
+
+        config.isCaidan = caidanEnabled;
 
         entergame(config);
     });
 
     connect(startmenu, &StartMenu::setgameclicked, this, [=]() {
+        caidanEnabled = !caidanEnabled;
+
+        if (caidanEnabled)
+        {
+            startmenu->showCaidanMessage("哈基米似乎发生了一些变化~");
+        }
+        else
+        {
+            startmenu->showCaidanMessage("哈基米恢复了原来的样子~");
+        }
     });
 
     connect(startmenu, &StartMenu::closeclicked,
@@ -58,6 +72,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(resultwidget, &ResultWidget::retryClicked, this, [=]() {
         entergame(lastConfig);
+    });
+
+    connect(gamewidget, &GameWidget::returnMenu, this, [=]() {
+        stackwidget->setCurrentWidget(startmenu);
     });
 }
 

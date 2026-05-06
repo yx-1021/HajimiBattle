@@ -10,7 +10,7 @@ class Attackbox
 {
 public:
     Attackbox();
-    Attackbox(QRectF &rec,double damage,double duration,bool ifplayer);
+    Attackbox(QRectF &rec, double damage, double duration, bool ifplayer, Battle battleType);
     void update();
     double Damage();
     QRectF getrect();
@@ -20,6 +20,7 @@ public:
 
     bool isExpired();
     void expire();
+    Battle Type();
 
 
     QRectF rect;
@@ -28,6 +29,7 @@ public:
     bool isplayer;
     bool isexpired;
     bool hashit = false;
+    Battle battleType = Battle::attack;
 
 };
 

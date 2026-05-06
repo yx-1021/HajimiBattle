@@ -36,13 +36,16 @@ public:
     bool pendattack = false;
     Battle pendbattle = Battle::attack;
 
-    double sightrange = 450;
-    double attackrange = 100;
+    double sightrange = 600;
+    double attackrange =100;
     double harange =100;
     Enemytype type;
     Battle battle=Battle::attack;
     double attinterval=0;
     double atttimer=0;
+
+    int prepareTimer = 0;
+    int prepareNeed = 45;
 
 
 };

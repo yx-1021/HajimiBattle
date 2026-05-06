@@ -75,10 +75,31 @@ Attackbox Enemy::createAttBox()
 }
 void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
 {
-    if (!ealive) {
+
+
+    if (!ealive)
+    {
         return;
     }
+
     updatecd();
+    pendattack = false;
+
+    if (isActionLocked())
+    {
+        updateaction();
+        atttimer++;
+        return;
+    }
+
+    if (isStiff())
+    {
+        action = Action::still;
+        pendattack = false;
+        skillFired = false;
+        updateaction();
+        return;
+    }
     pendattack = false;
 
     QPointF enemyCenter = rect().center();
@@ -87,6 +108,24 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
     double dy = playerCenter.y() - enemyCenter.y();
 
     double len = qSqrt(dx * dx + dy * dy);
+
+    bool inSkillRange = (len <= attackrange);
+
+    if (type == Enemytype::ocat)
+    {
+        inSkillRange = (len <= qMax(attackrange, harange));
+    }
+
+    if (inSkillRange)
+    {
+        prepareTimer++;
+    }
+    else
+    {
+        prepareTimer = 0;
+    }
+
+    bool prepared = prepareTimer >= prepareNeed;
 
     if (qAbs(dx) > qAbs(dy))
     {
@@ -97,12 +136,16 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
         direction = dy > 0 ? Direction::down : Direction::up;
     }
 
-    if (attinterval <= 0 && len <= attackrange && attackcd <= 0)
+    if (!prepared && inSkillRange)
+    {
+        aiState = Action::run;
+    }
+    else if (attinterval <= 0 && prepared && len <= attackrange && attackcd <= 0)
     {
         skillFired = false;
         chooseState(len);
     }
-    else if (attinterval <= 0 && len <= harange && hacd <= 0)
+    else if (attinterval <= 0 && prepared && type == Enemytype::ocat && len <= harange && hacd <= 0)
     {
         skillFired = false;
         chooseState(len);
@@ -117,6 +160,7 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
             chooseState(len);
         }
     }
+
     if (aiState == Action::still)
     {
         action = Action::still;
@@ -134,30 +178,33 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
             epos.setY(epos.y() + vy * speed);
         }
     }
-    else if (aiState ==Action::attack)
+    else if (aiState == Action::attack)
     {
-        action = Action::attack;
-
-        if (!skillFired && attackcd<= 0)
+        if (!skillFired && attackcd <= 0)
         {
             pendattack = true;
             pendbattle = Battle::attack;
             skillFired = true;
-            attackcd= 90;
-            attinterval=50;        }
-    }
-    else if (aiState ==Action::ha)
-    {
-        action = Action::ha;
 
-        if (!skillFired && hacd<= 0)
+            attackcd = 90;
+            attinterval = 50;
+            prepareTimer = 0;
+
+            playaction(Action::attack, 30);
+        }
+    }
+    else if (aiState == Action::ha)
+    {
+        if (!skillFired && hacd <= 0)
         {
             pendattack = true;
             pendbattle = Battle::ha;
             skillFired = true;
 
-            hacd= 120;
-            attinterval=35;
+            hacd = 120;
+            attinterval = 35;
+            prepareTimer = 0;
+
             halayer++;
 
             if (halayer >= 3)
@@ -165,22 +212,26 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
                 halayer = 3;
                 plusready = true;
             }
+
+            playaction(Action::ha, 35);
         }
     }
-    else if (aiState ==Action::plusattack)
+    else if (aiState == Action::plusattack)
     {
-        action = Action::plusattack;
-
-        if (!skillFired && pluscd<= 0 && plusready && halayer >= 3)
+        if (!skillFired && pluscd <= 0 && plusready && halayer >= 3)
         {
             pendattack = true;
             pendbattle = Battle::plusattack;
             skillFired = true;
 
-            pluscd= 160;
-            attinterval=60;
+            pluscd = 160;
+            attinterval = 60;
+            prepareTimer = 0;
+
             halayer = 0;
             plusready = false;
+
+            playaction(Action::plusattack, 35);
         }
     }
 

@@ -36,10 +36,8 @@ public:
 
     QPixmap currentPixmap();
 
-    // roleName: player / ocat / box
     void loadaction(const QString &roleName);
 
-    // 以后菜单换皮肤时可以调用这个，例如 loadaction("player_orange")
     void changeRole(const QString &roleName);
 
     void startAction(Action a, int keepTicks);
@@ -47,6 +45,10 @@ public:
 
     static QString Actionname(Action a);
     static QString Direcname(Direction d);
+
+    void addStiff(int ticks);
+    void updateStiff();
+    bool isStiff();
 
     double attackcd = 0;
     double hacd = 0;
@@ -62,8 +64,7 @@ public:
     Direction direction = Direction::right;
     Action action = Action::still;
 
-    // 这里只加载角色战斗动作，不包括 win / lose。
-    // win / lose 是结算背景，不应该放到角色动作数组里。
+
     static const int ACTION = 5;
     static const int DIRECT = 4;
 
@@ -79,6 +80,7 @@ public:
     Direction lastDirection = Direction::right;
 
     int actionLock = 0;
+    int stiffTicks = 0;
 };
 
 #endif

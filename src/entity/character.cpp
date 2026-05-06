@@ -282,12 +282,6 @@ void Character::loadaction(const QString &roleName)
     {
         epixmap = sprites[still][right][0];
     }
-    else
-    {
-        qDebug() << "role essential sprite missing:" << roleName;
-        qDebug() << "put one image here if you want single-picture mode:"
-                 << "assets/" + subFolderByRole(roleName) + "/" + roleName + ".png";
-    }
 }
 
 void Character::changeRole(const QString &roleName)
@@ -307,31 +301,28 @@ QPixmap Character::currentPixmap()
 
     int still = static_cast<int>(Action::still);
     int right = static_cast<int>(Direction::right);
+    int left = static_cast<int>(Direction::left);
+    int down = static_cast<int>(Direction::down);
+    int up = static_cast<int>(Direction::up);
 
     if (a >= 0 && a < ACTION && d >= 0 && d < DIRECT)
     {
+        // 1. 优先使用当前动作 + 当前方向
         if (!sprites[a][d].isEmpty())
         {
-            int idx = frameid % sprites[a][d].size();
-            return sprites[a][d][idx];
+            int id = frameid % sprites[a][d].size();
+            return sprites[a][d][id];
         }
 
         if (!sprites[still][d].isEmpty())
         {
-            int idx = frameid % sprites[still][d].size();
-            return sprites[still][d][idx];
-        }
-
-        if (!sprites[still][right].isEmpty())
-        {
-            int idx = frameid % sprites[still][right].size();
-            return sprites[still][right][idx];
+            int id = frameid % sprites[still][d].size();
+            return sprites[still][d][id];
         }
     }
 
     return epixmap;
 }
-
 void Character::startAction(Action a, int keepTicks)
 {
     action = a;
@@ -435,4 +426,25 @@ void Character::updategame(double mapw, double maph)
 {
     Q_UNUSED(mapw);
     Q_UNUSED(maph);
+}
+
+void Character::addStiff(int ticks)
+{
+    if (ticks > stiffTicks)
+    {
+        stiffTicks = ticks;
+    }
+}
+
+void Character::updateStiff()
+{
+    if (stiffTicks > 0)
+    {
+        stiffTicks--;
+    }
+}
+
+bool Character::isStiff()
+{
+    return stiffTicks > 0;
 }

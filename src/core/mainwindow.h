@@ -26,6 +26,8 @@ public:
 
     GameConfig lastConfig;
 
+    bool caidanEnabled = false;
+
     void entergame(const GameConfig &config);
     void showResult(ResultType type, int score);
 };

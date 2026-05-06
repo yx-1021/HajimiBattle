@@ -8,12 +8,13 @@ class GameConfig
 public:
     Mode mode;
     int level=1;
-    int enemynum=7;
-    int enemyspeed=3;
+    int enemynum=5;
+    int enemyspeed=2;
     bool isendless=false;
     int enemyinterval=1500;
     bool iswin;
     bool isgameover;
+    bool isCaidan = false;
 
 };
 

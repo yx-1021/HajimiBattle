@@ -37,6 +37,7 @@ void Player::paint(QPainter &painter)
 
 void Player::handleKeyP(QKeyEvent *event)
 {
+    if (isStiff()) return;
     if(event->key()==Qt::Key_W)
     {
         keyW=true;
@@ -84,6 +85,24 @@ void Player::handleKeyR(QKeyEvent *event)
 
 void Player::updategame(double mapw,double maph)
 {
+
+    updateStiff();
+
+    if (isStiff())
+    {
+        keyW = false;
+        keyS = false;
+        keyA = false;
+        keyD = false;
+
+        if (!isActionLocked())
+        {
+            action = Action::still;
+        }
+
+        updateaction();
+        return;
+    }
     double dx = 0;
     double dy = 0;
 
@@ -153,6 +172,7 @@ void Player::updatecd()
 bool Player::useskill(Battle type)
 {
     if (!ealive) return false;
+    if (isStiff()) return false;
 
     if (isActionLocked()) return false;
 

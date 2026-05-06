@@ -26,6 +26,7 @@ void Collision::handleColl(QVector<Attackbox> &attackboxes,
                 if (box.getrect().intersects(enemy.rect()))
                 {
                     enemy.hurt(box.Damage());
+                    enemy.addStiff(stiffTimeByBattle(box.Type()));
                     box.markHit();
                     break;
                 }
@@ -37,8 +38,29 @@ void Collision::handleColl(QVector<Attackbox> &attackboxes,
             if (player.isalive() && box.getrect().intersects(player.rect()))
             {
                 player.hurt(box.Damage());
+                player.addStiff(stiffTimeByBattle(box.Type()));
                 box.markHit();
             }
         }
     }
+}
+
+int Collision::stiffTimeByBattle(Battle type)
+{
+    if (type == Battle::attack)
+    {
+        return 2;
+    }
+
+    if (type == Battle::ha)
+    {
+        return 4;
+    }
+
+    if (type == Battle::plusattack)
+    {
+        return 2;
+    }
+
+    return 3;
 }

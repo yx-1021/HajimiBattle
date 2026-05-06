@@ -26,13 +26,19 @@ ResultWidget::ResultWidget(QWidget *parent)
     QString buttonStyle =
         "QPushButton {"
         "font-size: 22px;"
-        "font-weight: bold;"
-        "border-radius: 12px;"
-        "background-color: rgba(255, 255, 255, 220);"
+        "font-weight: 900;"
+        "color: black;"
+        "background-color: rgb(241, 233, 208);"
+        "border: none;"
+        "border-radius: 18px;"
         "}"
         "QPushButton:hover {"
-        "background-color: rgba(255, 230, 180, 240);"
+        "background-color: rgb(232, 222, 192);"
+        "}"
+        "QPushButton:pressed {"
+        "background-color: rgb(220, 210, 180);"
         "}";
+
 
     returnButton->setStyleSheet(buttonStyle);
     retryButton->setStyleSheet(buttonStyle);

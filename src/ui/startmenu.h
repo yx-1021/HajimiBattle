@@ -16,6 +16,12 @@ public:
     QPixmap bg;
         void paintEvent(QPaintEvent *event) override;
 
+    QWidget *Panel = nullptr;
+
+    QLabel *caidanLabel = nullptr;
+    void showCaidanMessage(const QString &text);
+
+
 signals:
     void levelclicked();
     void endlessclicked();

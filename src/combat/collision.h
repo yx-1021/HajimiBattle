@@ -16,6 +16,7 @@ public:
     static void handleColl(QVector<Attackbox> &attackboxes,
                                 Player &player,
                                 QVector<Enemy> &enemies);
+    static int stiffTimeByBattle(Battle type);
 };
 
 #endif // COLLISION_H

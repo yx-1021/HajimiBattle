@@ -1,11 +1,21 @@
 #include "attackbox.h"
 
 Attackbox::Attackbox() {}
-Attackbox::Attackbox(QRectF &rec,double damage,double duration,bool ifplayer)
-    :rect(rec),damage(damage),duration(duration),isplayer(ifplayer),isexpired(false)
+Attackbox::Attackbox(QRectF &rec, double damage, double duration, bool ifplayer, Battle battleType)
+    : rect(rec),
+    damage(damage),
+    duration(duration),
+    isplayer(ifplayer),
+    isexpired(false),
+    battleType(battleType)
 {
-
 }
+
+Battle Attackbox::Type()
+{
+    return battleType;
+}
+
 QRectF Attackbox::getrect()
 {
      return rect;

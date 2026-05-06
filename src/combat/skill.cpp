@@ -15,21 +15,21 @@ Attackbox Skill::createAttbox( Character &owner,
     {
         attdamage = 10;
         attdur = 8;
-        range =60;
-        thickness = 60;
+        range =70;
+        thickness =70;
     }
     else if (type == Battle::ha)
     {
         attdamage = 6;
         attdur = 16;
-        range =60;
-        thickness = 90;
+        range =70;
+        thickness =70;
     }
     else if (type == Battle::plusattack)
     {
         attdamage = 25;
         attdur = 10;
-        range =50;
+        range =70;
         thickness = 70;
     }
 
@@ -76,5 +76,5 @@ Attackbox Skill::createAttbox( Character &owner,
         break;
     }
 
-    return Attackbox(attackRect, attdamage,attdur,fromPlayer);
+    return Attackbox(attackRect, attdamage, attdur, fromPlayer, type);
 }
