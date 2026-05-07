@@ -5,9 +5,8 @@
 #include "attackbox.h"
 #include "src/entity/player.h"
 #include "src/entity/enemy.h"
-#include"skill.h"
 
-
+//判断命中和伤害僵直
 class Collision
 {
 public:
@@ -16,7 +15,7 @@ public:
     static void handleColl(QVector<Attackbox> &attackboxes,
                                 Player &player,
                                 QVector<Enemy> &enemies);
-    static int stiffTimeByBattle(Battle type);
+    static int stiffTime(Battle type);
 };
 
 #endif // COLLISION_H

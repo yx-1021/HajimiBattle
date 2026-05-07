@@ -40,23 +40,61 @@ QString subFolderByRole(const QString &roleName)
     return "enemy";
 }
 
-QString findAssetFile(const QString &subFolder, const QString &fileName)
+QString assetRoot()
 {
+    static bool initialized = false;
+    static QString root;
+
+    if (initialized)
+    {
+        return root;
+    }
+
     QStringList roots = possibleAssetRoots();
 
-    for (const QString &root : roots)
+    for (const QString &candidate : roots)
     {
-        QString path = QDir(root).filePath(subFolder + "/" + fileName);
-
-        if (QFileInfo::exists(path))
+        if (QDir(candidate).exists("player") ||
+            QDir(candidate).exists("enemy") ||
+            QDir(candidate).exists("background") ||
+            QDir(candidate).exists("ui"))
         {
-            return path;
+            root = QDir(candidate).absolutePath();
+            break;
         }
     }
 
-    return QString();
+    if (root.isEmpty())
+    {
+        root = QCoreApplication::applicationDirPath() + "/assets";
+    }
+
+    initialized = true;
+    return root;
 }
 
+QString findAssetFile(const QString &subFolder, const QString &fileName)
+{
+    static QHash<QString, QString> filePathCache;
+
+    QString key = subFolder + "/" + fileName;
+
+    if (filePathCache.contains(key))
+    {
+        return filePathCache.value(key);
+    }
+
+    QString path = QDir(assetRoot()).filePath(key);
+
+    if (QFileInfo::exists(path))
+    {
+        filePathCache.insert(key, path);
+        return path;
+    }
+
+    filePathCache.insert(key, QString());
+    return QString();
+}
 bool loadOnePixmap(QPixmap &pix, const QString &subFolder,
                    const QString &fileName, const QSize &targetSize)
 {
@@ -121,6 +159,7 @@ QVector<QPixmap> loadClip(const QString &roleName,
 
     QVector<QPixmap> clip;
 
+    int missCount = 0;
 
     for (int i = 0; i <= 30; i++)
     {
@@ -131,6 +170,21 @@ QVector<QPixmap> loadClip(const QString &roleName,
         if (loadOnePixmap(frame, subFolder, fileName, targetSize))
         {
             clip.push_back(frame);
+            missCount = 0;
+        }
+        else
+        {
+            missCount++;
+
+            if (!clip.isEmpty())
+            {
+                break;
+            }
+
+            if (missCount >= 2)
+            {
+                break;
+            }
         }
     }
 
@@ -161,7 +215,6 @@ QVector<QPixmap> loadClip(const QString &roleName,
     clipCache.insert(cacheKey, clip);
     return clip;
 }
-
 
 Character::Character()
     : Entity(),
@@ -300,14 +353,8 @@ QPixmap Character::currentPixmap()
     int d = static_cast<int>(direction);
 
     int still = static_cast<int>(Action::still);
-    int right = static_cast<int>(Direction::right);
-    int left = static_cast<int>(Direction::left);
-    int down = static_cast<int>(Direction::down);
-    int up = static_cast<int>(Direction::up);
-
     if (a >= 0 && a < ACTION && d >= 0 && d < DIRECT)
     {
-        // 1. 优先使用当前动作 + 当前方向
         if (!sprites[a][d].isEmpty())
         {
             int id = frameid % sprites[a][d].size();
@@ -322,16 +369,6 @@ QPixmap Character::currentPixmap()
     }
 
     return epixmap;
-}
-void Character::startAction(Action a, int keepTicks)
-{
-    action = a;
-    actionLock = keepTicks;
-
-    frameid = 0;
-    frametick = 0;
-    lastAction = a;
-    lastDirection = direction;
 }
 
 void Character::playaction(Action a, int lockTicks)

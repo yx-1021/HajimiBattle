@@ -1,5 +1,9 @@
 #include "resultwidget.h"
+#include "src/core/gameconfig.h"
 #include <QDebug>
+
+
+//结算界面
 ResultWidget::ResultWidget(QWidget *parent)
     : QWidget(parent)
 {
@@ -75,15 +79,15 @@ void ResultWidget::setResult(ResultType type, int score)
 
     if (type == ResultType::win)
     {
-        path = "D:/Mypractice/Qt/HajimiBattle/assets/background/win.png";
+       path = ASSET("background/win.png");
     }
     else if (type == ResultType::lose)
     {
-        path = "D:/Mypractice/Qt/HajimiBattle/assets/background/lose.png";
+        path = ASSET("background/lose.png");
     }
     else
     {
-        path = "D:/Mypractice/Qt/HajimiBattle/assets/background/end.png";
+        path = ASSET("background/end.png");
     }
 
     bg.load(path);

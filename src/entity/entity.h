@@ -3,7 +3,8 @@
 
 #include <QPixmap>
 #include <QPainter>
-#include <QRectF>
+#include<QPainter>
+#include <QRect>
 #include <QPointF>
 #include <QSizeF>
 class Entity

@@ -1,16 +1,16 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include<QRectF>
-#include "character.h"
-#include "src/entity/character.h"
+#include <QRect>
+#include <QPainter>
 #include <QKeyEvent>
-#include <QtGlobal>
-#include<QPaintEvent>
-#include<QPainter>
-#include<QPixmap>
-#include<QtMath>
-#include"src/combat/skill.h"
+#include <QPixmap>
+#include <QtMath>
+
+#include "character.h"
+#include "src/combat/attackbox.h"
+#include "src/combat/skill.h"
+#include"src/core/gametypes.h"
 
 class Player:public Character
 {
@@ -22,9 +22,9 @@ public:
     void handleKeyR(QKeyEvent *event);
     void updategame(double mapw,double maph)override;
     void load();
-    Attackbox createAttbox(Battle type);
     void updatecd();
     bool useskill(Battle type);
+    void resetfornew();
 
 
     bool keyW = false;

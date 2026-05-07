@@ -24,8 +24,8 @@
 #include "src/entity/player.h"
 #include "src/entity/enemy.h"
 #include "src/combat/attackbox.h"
+#include"src/ui/hud.h"
 #include"src/combat/collision.h"
-#include "src/ui/hud.h"
 class GameWidget : public QWidget
 {
     Q_OBJECT
@@ -42,7 +42,6 @@ public:
     void removedead();
     void gamestate();
     void playeratt(Battle att);
-    void enemyatt(Battle att,Enemy type);
     void generateenemy();
     void manyenemy();
     void setConfig(const GameConfig &newConfig);
@@ -53,7 +52,6 @@ public:
 
     void initUi();
     void updateUiGeometry();
-    void togglePause();
 
     void loadUiAssets();
     void loadSounds();
@@ -109,6 +107,10 @@ public:
     QVector<QRectF> cureItems;
 
     int cureSpawnTimer = 0;
+
+    bool currentcai = false;
+    bool soundmodeinit = false;
+    int pendinitenemy= 0;
 
     QPushButton *pauseButton = nullptr;
 

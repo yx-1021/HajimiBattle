@@ -1,5 +1,7 @@
 #include "hud.h"
 
+
+//界面ui绘制
 QString HUD::iconButtonStyle()
 {
     return

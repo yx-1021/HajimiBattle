@@ -8,6 +8,7 @@
 class Skill
 {
 public:
+    //创建攻击框
     static Attackbox createAttbox(Character &owner,
                                      Battle type,
                                      bool fromPlayer);

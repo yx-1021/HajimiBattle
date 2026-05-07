@@ -3,8 +3,10 @@
 
 #include <QPointF>
 #include <QtMath>
+#include<QWidget>
+#include<QPainter>
 #include<QRandomGenerator>
-#include "src/entity/character.h"
+#include "character.h"
 #include "src/core/gametypes.h"
 #include "src/combat/attackbox.h"
 #include"src/combat/skill.h"
@@ -15,8 +17,6 @@ public:
     Enemy();
     Enemy(Enemytype type,double x,double y);
 
-    Attackbox createAttbkBox();
-    bool canatt();
     void initbat();
     void load();
     void paint(QPainter &painter);

@@ -1,5 +1,6 @@
 #include "attackbox.h"
 
+//攻击判定区域
 Attackbox::Attackbox() {}
 Attackbox::Attackbox(QRectF &rec, double damage, double duration, bool ifplayer, Battle battleType)
     : rect(rec),
@@ -50,10 +51,6 @@ void Attackbox::markHit()
  bool Attackbox::isExpired()
 {
      return isexpired;
-}
-void Attackbox::expire()
-{
-    isexpired=true;
 }
  double Attackbox:: Damage()
 {

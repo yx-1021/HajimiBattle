@@ -15,23 +15,24 @@ Enemy::Enemy(Enemytype t,double x, double y)
     load();
 }
 
+//设置敌人属性
 void Enemy::initbat()
 {
     if(type==Enemytype::ocat)
     {
-        hp=10;
-        maxhp=10;
+        hp=20;
+        maxhp=20;
         speed=1.0;
-        attack=3;
+        attack=10;
         attinterval=120;
 
     }
     else
     {
-        hp=7;
-        maxhp=7;
+        hp=12;
+        maxhp=12;
         speed=0.5;
-        attack=2;
+        attack=5;
         attinterval=120;
     }
 }
@@ -63,16 +64,6 @@ void Enemy::paint(QPainter &painter)
     }
 }
 
-bool Enemy::canatt()
-{
-    return ealive&&atttimer>=attinterval;
-}
-
-Attackbox Enemy::createAttBox()
-{
-    atttimer=0;
-    return Skill::createAttbox(*this, battle, false);
-}
 void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
 {
 
@@ -251,6 +242,7 @@ void Enemy::updatecd()
      if (attinterval > 0) attinterval--;
 }
 
+//根据敌人类型，冷却状态，随机数选择ai状态
 void Enemy::chooseState(double len)
 {
     skillFired = false;
@@ -264,6 +256,7 @@ void Enemy::chooseState(double len)
         return;
     }
 
+    //纸箱怪
     if (type == Enemytype::box)
     {
         if (len <= attackrange && attackcd <= 0)
@@ -288,6 +281,7 @@ void Enemy::chooseState(double len)
     }
 
 
+    //橘猫怪
     if (plusready && halayer >= 3 && pluscd <= 0 && len <= attackrange + 40)
     {
         aiState = Action::plusattack;
@@ -320,12 +314,13 @@ void Enemy::chooseState(double len)
         aiTimer = QRandomGenerator::global()->bounded(50, 120);
     }
 }
-
+//返回是否有带生成的攻击框
 bool Enemy::haspendatt()
 {
    return pendattack;
 }
 
+//取出待释放的攻击框
 Attackbox Enemy::takePendingAttackBox()
 {
     pendattack = false;

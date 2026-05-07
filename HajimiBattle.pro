@@ -1,5 +1,5 @@
 QT += core gui widgets multimedia
-
+QT += widgets
 CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -299,3 +299,5 @@ DISTFILES += \
     assets/sound/player_attack.mp3 \
     assets/sound/player_plusattack.mp3 \
     assets/sound/win.mp3
+
+DEFINES += ASSETS_DIR=\\\"$$PWD/assets\\\"

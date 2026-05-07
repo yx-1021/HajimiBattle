@@ -5,6 +5,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     resize(1000, 600);
 
+    setWindowTitle("猫咪大作战");
+
+//管理窗口
     stackwidget = new QStackedWidget(this);
 
     startmenu = new StartMenu(this);

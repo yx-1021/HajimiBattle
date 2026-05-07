@@ -1,11 +1,12 @@
 #include "startmenu.h"
 #include "qtimer.h"
+#include "src/core/gameconfig.h"
 
 StartMenu::StartMenu(QWidget *parent)
     : QWidget{parent}
 {
     this->setFixedSize(1000, 600);
-    //创建四种模式
+    //创建四种按钮
     QPushButton *levelButton = new QPushButton("普通模式", this);
     QPushButton *endlessButton = new QPushButton("无尽模式", this);
     QPushButton *setbutton = new QPushButton("彩蛋", this);
@@ -37,7 +38,7 @@ StartMenu::StartMenu(QWidget *parent)
     setbutton->setGeometry(600,400,300,50);
     closebutton->setGeometry(600,500,300,50);
     //添加背景
-    bg.load("D:/Mypractice/Qt/HajimiBattle/assets/background/cover.png");
+    bg.load(ASSET("background/cover.png"));
 
     connect(levelButton, &QPushButton::clicked, this, &StartMenu::levelclicked);
     connect(endlessButton, &QPushButton::clicked, this, &StartMenu::endlessclicked);
@@ -50,7 +51,7 @@ StartMenu::StartMenu(QWidget *parent)
       caidanLabel->setStyleSheet(
           "QLabel {"
           "font-size: 26px;"
-          "color: rgb(255，250，205);"
+          "color: rgb(255,250,205);"
           "background-color: transparent;"
           "border-radius: 18px;"
           "}"

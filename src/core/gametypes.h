@@ -31,4 +31,4 @@ enum class ResultType
     win,lose,end
 };
 
-#endif // GAMETYPES_H
+#endif

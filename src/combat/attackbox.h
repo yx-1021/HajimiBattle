@@ -6,6 +6,7 @@
 #include"src/core/gametypes.h"
 #include"src/entity/character.h"
 
+//攻击判定
 class Attackbox
 {
 public:
@@ -19,7 +20,6 @@ public:
     void markHit();
 
     bool isExpired();
-    void expire();
     Battle Type();
 
 

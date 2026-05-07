@@ -1,5 +1,7 @@
 #include "collision.h"
 
+
+//碰撞检测
 Collision::Collision()
 {
 }
@@ -26,7 +28,7 @@ void Collision::handleColl(QVector<Attackbox> &attackboxes,
                 if (box.getrect().intersects(enemy.rect()))
                 {
                     enemy.hurt(box.Damage());
-                    enemy.addStiff(stiffTimeByBattle(box.Type()));
+                    enemy.addStiff(stiffTime(box.Type()));
                     box.markHit();
                     break;
                 }
@@ -38,14 +40,16 @@ void Collision::handleColl(QVector<Attackbox> &attackboxes,
             if (player.isalive() && box.getrect().intersects(player.rect()))
             {
                 player.hurt(box.Damage());
-                player.addStiff(stiffTimeByBattle(box.Type()));
+                player.addStiff(stiffTime(box.Type()));
                 box.markHit();
             }
         }
     }
 }
 
-int Collision::stiffTimeByBattle(Battle type)
+
+//僵直处理
+int Collision::stiffTime(Battle type)
 {
     if (type == Battle::attack)
     {

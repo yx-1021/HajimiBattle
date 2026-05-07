@@ -4,6 +4,17 @@
 Player::Player()
     : Character(300, 300, 100, 100)
 {
+    resetfornew();
+    load();
+}
+
+
+void Player::resetfornew()
+{
+    epos = QPointF(300, 300);
+    esize = QSizeF(100, 100);
+
+    ealive = true;
     maxhp = 100;
     hp = 100;
     attack = 10;
@@ -18,10 +29,19 @@ Player::Player()
     keyA = false;
     keyD = false;
 
-    load();
+    attackcd = 0;
+    hacd = 0;
+    pluscd = 0;
+    halayer = 0;
+    plusready = false;
+
+    frameid = 0;
+    frametick = 0;
+    actionLock = 0;
+    stiffTicks = 0;
 }
 
-
+//绘制玩家
 void Player::paint(QPainter &painter)
 {
     if (!ealive) return;
@@ -34,10 +54,10 @@ void Player::paint(QPainter &painter)
     }
 
 }
-
+//处理键盘按下和释放
 void Player::handleKeyP(QKeyEvent *event)
 {
-    if (isStiff()) return;
+    if (isStiff()) return;//僵直处理
     if(event->key()==Qt::Key_W)
     {
         keyW=true;
@@ -82,11 +102,11 @@ void Player::handleKeyR(QKeyEvent *event)
 
 }
 
-
+//更新
 void Player::updategame(double mapw,double maph)
 {
 
-    updateStiff();
+    updateStiff();//依旧僵直处理
 
     if (isStiff())
     {
@@ -156,10 +176,6 @@ void Player::load()
     loadaction("player");
 }
 
-Attackbox Player::createAttbox(Battle type)
-{
-    return Skill::createAttbox(*this, type, true);
-}
 
 void Player::updatecd()
 {
@@ -169,6 +185,7 @@ void Player::updatecd()
     if(pluscd>0) pluscd--;
 }
 
+//技能释放
 bool Player::useskill(Battle type)
 {
     if (!ealive) return false;

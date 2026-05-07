@@ -9,6 +9,7 @@
 #include <QString>
 #include <QPixmap>
 #include <QKeyEvent>
+#include<QString>
 
 class Character : public Entity
 {
@@ -39,8 +40,6 @@ public:
     void loadaction(const QString &roleName);
 
     void changeRole(const QString &roleName);
-
-    void startAction(Action a, int keepTicks);
     bool actionLocked();
 
     static QString Actionname(Action a);
@@ -49,6 +48,7 @@ public:
     void addStiff(int ticks);
     void updateStiff();
     bool isStiff();
+    QString assetRoot();
 
     double attackcd = 0;
     double hacd = 0;

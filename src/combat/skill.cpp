@@ -1,5 +1,7 @@
 #include "skill.h"
 
+
+//创建攻击框
 Attackbox Skill::createAttbox( Character &owner,
                                  Battle  type,
                                  bool fromPlayer)
