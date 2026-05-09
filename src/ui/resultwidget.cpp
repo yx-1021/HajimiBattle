@@ -91,7 +91,7 @@ void ResultWidget::setResult(ResultType type, int score)
     }
 
     bg.load(path);
-    scoreLabel->setText(QString("分数：%1").arg(score));
+    scoreLabel->setText(QStringLiteral(u"分数: %1").arg(score));
 
     update();
 }

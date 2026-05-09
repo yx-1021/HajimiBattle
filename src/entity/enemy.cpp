@@ -78,6 +78,7 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
 
     if (isActionLocked())
     {
+        updateStiff();
         updateaction();
         atttimer++;
         return;
@@ -88,7 +89,11 @@ void Enemy::updategame(double mapw, double maph,QPointF playerCenter)
         action = Action::still;
         pendattack = false;
         skillFired = false;
+
+        updateStiff();
         updateaction();
+
+        atttimer++;
         return;
     }
     pendattack = false;

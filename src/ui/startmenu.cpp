@@ -51,7 +51,7 @@ StartMenu::StartMenu(QWidget *parent)
       caidanLabel->setStyleSheet(
           "QLabel {"
           "font-size: 26px;"
-          "color: rgb(255,250,205);"
+          "color: rgb(238,173,14);"
           "background-color: transparent;"
           "border-radius: 18px;"
           "}"

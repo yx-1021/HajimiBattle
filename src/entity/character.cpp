@@ -8,7 +8,7 @@
 #include <QPixmapCache>
 #include <QStringList>
 
-
+//以下几个函数用于查找资源路径及加载资源
 QStringList possibleAssetRoots()
 {
     QString appDir = QCoreApplication::applicationDirPath();
@@ -216,6 +216,7 @@ QVector<QPixmap> loadClip(const QString &roleName,
     return clip;
 }
 
+//初始化，创建一个默认角色
 Character::Character()
     : Entity(),
     hp(10),
@@ -238,10 +239,7 @@ Character::Character(double x, double y, double w, double h)
 {
 }
 
-void Character::load()
-{
-}
-
+//受到伤害处理
 void Character::hurt(double att)
 {
     if (!ealive) return;
@@ -274,7 +272,7 @@ void Character::setAction(Action a)
 {
     action = a;
 }
-
+//以下两个用于拼接素材文件名
 QString Character::Actionname(Action a)
 {
     switch (a)
@@ -311,6 +309,7 @@ QString Character::Direcname(Direction d)
     return "right";
 }
 
+//加载动作和素材
 void Character::loadaction(const QString &roleName)
 {
     role = roleName;
@@ -337,6 +336,7 @@ void Character::loadaction(const QString &roleName)
     }
 }
 
+//切换角色
 void Character::changeRole(const QString &roleName)
 {
     loadaction(roleName);
@@ -347,6 +347,7 @@ void Character::changeRole(const QString &roleName)
     direction = Direction::right;
 }
 
+//获取当前应该绘制的角色图片
 QPixmap Character::currentPixmap()
 {
     int a = static_cast<int>(action);
@@ -371,6 +372,7 @@ QPixmap Character::currentPixmap()
     return epixmap;
 }
 
+//播放动作并锁定
 void Character::playaction(Action a, int lockTicks)
 {
     action = a;
@@ -382,16 +384,14 @@ void Character::playaction(Action a, int lockTicks)
     lastDirection = direction;
 }
 
-bool Character::actionLocked()
-{
-    return actionLock > 0;
-}
+//判断是否锁定
 
 bool Character::isActionLocked()
 {
     return actionLock > 0;
 }
 
+//更新动画帧
 void Character::updateanimation()
 {
     int a = static_cast<int>(action);
@@ -445,12 +445,14 @@ void Character::updateanimation()
     }
 }
 
+//更新动作
 void Character::updateaction()
 {
     updateanimation();
     updateactionlock();
 }
 
+//更新动作锁
 void Character::updateactionlock()
 {
     if (actionLock > 0)
@@ -465,6 +467,8 @@ void Character::updategame(double mapw, double maph)
     Q_UNUSED(maph);
 }
 
+
+//以下函数用于处理僵直
 void Character::addStiff(int ticks)
 {
     if (ticks > stiffTicks)

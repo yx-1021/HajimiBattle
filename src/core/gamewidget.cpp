@@ -631,7 +631,7 @@ void GameWidget::endByUser()
 
     if (boxattplay) boxattplay->stop();
 
-    playEffect(loseplay);
+    playEffect(endPlayer);
 
     emit gameFinished(ResultType::end, score);
 }
